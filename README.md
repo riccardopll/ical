@@ -1,5 +1,7 @@
 # ical-cli
 
+[![CI](https://github.com/riccardopll/ical-cli/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/riccardopll/ical-cli/actions/workflows/ci.yml)
+
 Read-only macOS Calendar CLI built with Bun.
 
 The CLI opens the Calendar database in read-only mode and queries it directly.

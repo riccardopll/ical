@@ -2,10 +2,12 @@ import { program } from "commander";
 import { calendarsCommand } from "./commands/calendars";
 import { listCommand } from "./commands/list";
 
+const cliVersion = process.env.ICAL_VERSION ?? "0.0.0-dev";
+
 program
   .name("ical")
   .description("Read-only macOS Calendar CLI")
-  .version("0.0.1");
+  .version(cliVersion);
 
 program
   .command("calendars")
