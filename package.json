@@ -10,6 +10,7 @@
     "build": "bun build --compile --minify --env inline src/index.ts --outfile out/ical",
     "lint": "bunx prettier . --write && bunx sort-package-json",
     "lint:ci": "bunx prettier . --check && bunx sort-package-json --check",
+    "release": "./scripts/tag-release.sh",
     "test": "bun test"
   },
   "dependencies": {
