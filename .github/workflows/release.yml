@@ -70,11 +70,12 @@ jobs:
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
           VERSION: ${{ github.ref_name }}
         run: |
-          if gh release view "$VERSION" >/dev/null 2>&1; then
-            gh release upload "$VERSION" release-assets/* --clobber
-            gh release edit "$VERSION" --title "$VERSION"
+          if gh release view "$VERSION" --repo "$REPO" >/dev/null 2>&1; then
+            gh release upload "$VERSION" release-assets/* --repo "$REPO" --clobber
+            gh release edit "$VERSION" --repo "$REPO" --title "$VERSION"
           else
-            gh release create "$VERSION" release-assets/* --title "$VERSION" --notes ""
+            gh release create "$VERSION" release-assets/* --repo "$REPO" --title "$VERSION" --notes ""
           fi
