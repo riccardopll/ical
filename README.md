@@ -4,8 +4,6 @@
 
 Read-only macOS Calendar CLI built with Bun.
 
-The CLI opens the Calendar database in read-only mode and queries it directly.
-
 ## Install
 
 ```bash
