@@ -6,6 +6,13 @@ Read-only macOS Calendar CLI built with Bun.
 
 The CLI opens the Calendar database in read-only mode and queries it directly.
 
+## Install
+
+```bash
+brew tap riccardopll/tap
+brew install riccardopll/tap/ical-cli
+```
+
 ## Usage
 
 | Command                                                             | Description                                       | Example                                                                       |
