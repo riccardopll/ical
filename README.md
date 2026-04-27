@@ -1,6 +1,6 @@
-# ical-cli
+# ical
 
-[![CI](https://github.com/riccardopll/ical-cli/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/riccardopll/ical-cli/actions/workflows/ci.yml)
+[![CI](https://github.com/riccardopll/ical/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/riccardopll/ical/actions/workflows/ci.yml)
 
 Read-only macOS Calendar CLI built with Bun.
 
@@ -8,7 +8,7 @@ Read-only macOS Calendar CLI built with Bun.
 
 ```bash
 brew tap riccardopll/tap
-brew install riccardopll/tap/ical-cli
+brew install riccardopll/tap/ical
 ```
 
 ## Usage

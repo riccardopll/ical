@@ -1,5 +1,5 @@
 {
-  "name": "ical-cli",
+  "name": "ical",
   "private": true,
   "type": "module",
   "module": "src/index.ts",
@@ -7,7 +7,7 @@
     "ical": "./src/index.ts"
   },
   "scripts": {
-    "build": "bun build --compile --minify --env inline src/index.ts --outfile out/ical-cli",
+    "build": "bun build --compile --minify --env inline src/index.ts --outfile out/ical",
     "lint": "bunx prettier . --write && bunx sort-package-json",
     "lint:ci": "bunx prettier . --check && bunx sort-package-json --check",
     "release": "./scripts/tag-release.sh",
