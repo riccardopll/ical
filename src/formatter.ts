@@ -1,52 +1,51 @@
-import chalk from "chalk";
-import dayjs from "dayjs";
-import type { Calendar, CalendarEvent } from "./types";
+import { encode } from "@toon-format/toon";
+import type { Calendar, CalendarEvent, FormatOptions } from "./types";
 
-export function formatCalendars(calendars: Calendar[]): string {
-  if (calendars.length === 0) {
-    return chalk.yellow("No calendars found");
-  }
-
-  return calendars.map((cal) => `• ${chalk.bold(cal.name)}`).join("\n");
+export function formatCalendars(
+  calendars: Calendar[],
+  options: FormatOptions = {},
+) {
+  return formatData(
+    {
+      calendars: calendars.map((calendar) => ({
+        id: calendar.id,
+        name: calendar.name,
+        color: calendar.color,
+        origin: calendar.origin,
+      })),
+    },
+    options,
+  );
 }
 
-export function formatEvents(events: CalendarEvent[]): string {
-  if (events.length === 0) {
-    return chalk.yellow("No events found");
+export function formatEvents(
+  events: CalendarEvent[],
+  options: FormatOptions = {},
+) {
+  return formatData(
+    {
+      events: events.map((event) => ({
+        id: event.id,
+        calendarId: event.calendarId,
+        calendarName: event.calendarName,
+        title: event.title,
+        startDate: event.startDate.toISOString(),
+        endDate: event.endDate.toISOString(),
+        location: event.location ?? "",
+        notes: event.notes ?? "",
+        allDay: event.allDay,
+      })),
+    },
+    options,
+  );
+}
+
+function formatData(data: unknown, options: FormatOptions) {
+  const format = options.format ?? "toon";
+
+  if (format === "toon") {
+    return encode(data);
   }
 
-  const grouped = new Map<string, CalendarEvent[]>();
-
-  for (const event of events) {
-    const dateKey = dayjs(event.startDate).format("YYYY-MM-DD");
-    if (!grouped.has(dateKey)) {
-      grouped.set(dateKey, []);
-    }
-    grouped.get(dateKey)!.push(event);
-  }
-
-  const lines: string[] = [];
-
-  for (const [dateKey, dayEvents] of grouped) {
-    const date = dayjs(dateKey);
-    lines.push("");
-    lines.push(chalk.bold.blue(date.format("dddd, MMMM D, YYYY")));
-
-    for (const event of dayEvents) {
-      const timeStr = event.allDay
-        ? chalk.dim("all-day")
-        : chalk.dim(
-            `${dayjs(event.startDate).format("HH:mm")} - ${dayjs(event.endDate).format("HH:mm")}`,
-          );
-
-      lines.push(`  ${timeStr}  ${event.title}`);
-      lines.push(chalk.dim(`           [${event.calendarName}] ${event.id}`));
-
-      if (event.location) {
-        lines.push(chalk.dim(`           📍 ${event.location}`));
-      }
-    }
-  }
-
-  return lines.join("\n");
+  throw new Error(`Unsupported output format: ${format}`);
 }

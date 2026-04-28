@@ -1,10 +1,11 @@
-export interface Calendar {
+export type Calendar = {
   id: string;
   name: string;
   color: string;
-}
+  origin: string;
+};
 
-export interface CalendarEvent {
+export type CalendarEvent = {
   id: string;
   calendarId: string;
   calendarName: string;
@@ -14,11 +15,15 @@ export interface CalendarEvent {
   location?: string;
   notes?: string;
   allDay: boolean;
-}
+};
 
-export interface ListOptions {
-  days?: number;
+export type FormatOptions = {
+  format?: string;
+};
+
+export type ListOptions = FormatOptions & {
+  days?: number | string;
   from?: string;
   to?: string;
   calendar?: string;
-}
+};

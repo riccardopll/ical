@@ -64,25 +64,27 @@ describe("listCommand", () => {
       dayjs().add(2, "day").endOf("day").toDate(),
       undefined,
     );
-    expect(formatEvents).toHaveBeenCalledWith(events);
+    expect(formatEvents).toHaveBeenCalledWith(events, { format: "toon" });
     expect(logSpy).toHaveBeenCalledWith("formatted events");
   });
 
-  it("uses explicit from/to dates and forwards the calendar filter", async () => {
+  it("uses explicit from/to dates and forwards the calendar id filter", async () => {
     listEventsMock.mockResolvedValue([]);
     formatEventsMock.mockReturnValue("no events");
 
     await listCommand({
       from: "2026-04-01",
       to: "2026-04-03",
-      calendar: "Work",
+      calendar: "cal-1",
+      format: "toon",
     });
 
     expect(listEvents).toHaveBeenCalledWith(
       dayjs("2026-04-01").startOf("day").toDate(),
       dayjs("2026-04-03").endOf("day").toDate(),
-      "Work",
+      "cal-1",
     );
+    expect(formatEvents).toHaveBeenCalledWith([], { format: "toon" });
     expect(logSpy).toHaveBeenCalledWith("no events");
   });
 });

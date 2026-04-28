@@ -9,13 +9,14 @@ const DEFAULT_DB_CANDIDATES = [
   "Library/Calendars/Calendar Cache",
 ];
 
-interface CalendarRow {
+type CalendarRow = {
   id: string;
   name: string;
   color: string;
-}
+  origin: string;
+};
 
-interface EventRow {
+type EventRow = {
   id: string;
   calendarId: string;
   calendarName: string;
@@ -25,33 +26,36 @@ interface EventRow {
   location: string;
   notes: string;
   allDay: number;
-}
+};
 
-export async function listCalendars(): Promise<Calendar[]> {
+export async function listCalendars() {
   return withCalendarDb((db) => {
     const query = db.query<CalendarRow, []>(`
       SELECT
-        COALESCE(UUID, CAST(ROWID AS TEXT)) AS id,
-        title AS name,
-        COALESCE(color, '') AS color
-      FROM Calendar
-      WHERE title IS NOT NULL
-        AND TRIM(title) <> ''
-      ORDER BY display_order, title COLLATE NOCASE
+        COALESCE(c.UUID, CAST(c.ROWID AS TEXT)) AS id,
+        c.title AS name,
+        COALESCE(c.color, '') AS color,
+        COALESCE(s.name, '') AS origin
+      FROM Calendar c
+      LEFT JOIN Store s ON s.ROWID = c.store_id
+      WHERE c.title IS NOT NULL
+        AND TRIM(c.title) <> ''
+      ORDER BY c.display_order, c.title COLLATE NOCASE
     `);
 
-    return query.all();
+    const calendars: Calendar[] = query.all();
+    return calendars;
   });
 }
 
 export async function listEvents(
   startDate: Date,
   endDate: Date,
-  calendarName?: string,
-): Promise<CalendarEvent[]> {
+  calendarId?: string,
+) {
   const start = dateToAppleSeconds(startDate);
   const end = dateToAppleSeconds(endDate);
-  const normalizedCalendarName = calendarName?.trim().toLowerCase() ?? null;
+  const normalizedCalendarId = calendarId?.trim().toLowerCase() ?? null;
 
   return withCalendarDb((db) => {
     const query = db.query<
@@ -78,20 +82,20 @@ export async function listEvents(
       WHERE c.title IS NOT NULL
         AND TRIM(c.title) <> ''
         AND ci.summary IS NOT NULL
-        AND (? IS NULL OR LOWER(c.title) = ?)
+        AND (? IS NULL OR LOWER(COALESCE(c.UUID, CAST(c.ROWID AS TEXT))) = ?)
         AND COALESCE(oc.occurrence_end_date, ci.end_date) > ?
         AND COALESCE(oc.occurrence_start_date, oc.occurrence_date, ci.start_date) < ?
       ORDER BY startDate, endDate, title COLLATE NOCASE
     `);
 
     const rows = query.all(
-      normalizedCalendarName,
-      normalizedCalendarName,
+      normalizedCalendarId,
+      normalizedCalendarId,
       start,
       end,
     );
 
-    return rows.map((row) => ({
+    const events: CalendarEvent[] = rows.map((row) => ({
       id: row.id,
       calendarId: row.calendarId,
       calendarName: row.calendarName,
@@ -102,10 +106,12 @@ export async function listEvents(
       notes: row.notes,
       allDay: Boolean(row.allDay),
     }));
+
+    return events;
   });
 }
 
-async function withCalendarDb<T>(run: (db: Database) => T): Promise<T> {
+async function withCalendarDb<T>(run: (db: Database) => T) {
   const dbPath = await resolveCalendarDbPath();
   const db = new Database(dbPath, {
     readonly: true,
@@ -120,7 +126,7 @@ async function withCalendarDb<T>(run: (db: Database) => T): Promise<T> {
   }
 }
 
-async function resolveCalendarDbPath(): Promise<string> {
+async function resolveCalendarDbPath() {
   const explicitPath = Bun.env.ICAL_CALENDAR_DB_PATH?.trim();
   if (explicitPath) {
     if (await Bun.file(explicitPath).exists()) {
@@ -151,10 +157,10 @@ async function resolveCalendarDbPath(): Promise<string> {
   );
 }
 
-function dateToAppleSeconds(date: Date): number {
+function dateToAppleSeconds(date: Date) {
   return (date.getTime() - APPLE_EPOCH_MS) / 1000;
 }
 
-function appleSecondsToDate(seconds: number): Date {
+function appleSecondsToDate(seconds: number) {
   return new Date(APPLE_EPOCH_MS + seconds * 1000);
 }

@@ -3,7 +3,7 @@ import { listEvents } from "../sqlite/calendar";
 import { formatEvents } from "../formatter";
 import type { ListOptions } from "../types";
 
-export async function listCommand(options: ListOptions): Promise<void> {
+export async function listCommand(options: ListOptions) {
   let startDate: Date;
   let endDate: Date;
 
@@ -17,5 +17,5 @@ export async function listCommand(options: ListOptions): Promise<void> {
   }
 
   const events = await listEvents(startDate, endDate, options.calendar);
-  console.log(formatEvents(events));
+  console.log(formatEvents(events, { format: options.format ?? "toon" }));
 }

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, mock, vi } from "bun:test";
+import { beforeEach, describe, expect, it, vi } from "bun:test";
 import type { Mock } from "bun:test";
 import type { Calendar } from "../types";
 
@@ -26,8 +26,8 @@ describe("calendarsCommand", () => {
 
   it("prints the formatted calendar list", async () => {
     const calendars: Calendar[] = [
-      { id: "cal-1", name: "Personal", color: "#ff0000" },
-      { id: "cal-2", name: "Work", color: "#00ff00" },
+      { id: "cal-1", name: "Personal", color: "#ff0000", origin: "iCloud" },
+      { id: "cal-2", name: "Work", color: "#00ff00", origin: "Work" },
     ];
 
     listCalendarsMock.mockResolvedValue(calendars);
@@ -36,7 +36,7 @@ describe("calendarsCommand", () => {
     await calendarsCommand();
 
     expect(listCalendars).toHaveBeenCalledTimes(1);
-    expect(formatCalendars).toHaveBeenCalledWith(calendars);
+    expect(formatCalendars).toHaveBeenCalledWith(calendars, { format: "toon" });
     expect(logSpy).toHaveBeenCalledWith("formatted calendars");
   });
 });

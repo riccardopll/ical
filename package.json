@@ -4,17 +4,19 @@
   "type": "module",
   "module": "src/index.ts",
   "bin": {
-    "ical": "./src/index.ts"
+    "ical": "./dist/ical"
   },
   "scripts": {
-    "build": "bun build --compile --minify --env inline src/index.ts --outfile out/ical",
-    "lint": "bunx prettier . --write && bunx sort-package-json",
-    "lint:ci": "bunx prettier . --check && bunx sort-package-json --check",
+    "build": "bun build --compile --minify --env inline src/index.ts --outfile dist/ical",
+    "format": "bunx prettier . --write",
     "release": "./scripts/tag-release.sh",
-    "test": "bun test"
+    "test": "bun test",
+    "typecheck": "bunx tsc -p tsconfig.json --noEmit",
+    "list": "bun src/index.ts list",
+    "calendars": "bun src/index.ts calendars"
   },
   "dependencies": {
-    "chalk": "^5.6.2",
+    "@toon-format/toon": "^2.1.0",
     "commander": "^14.0.3",
     "dayjs": "^1.11.19"
   },
